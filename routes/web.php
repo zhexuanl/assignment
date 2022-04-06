@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\HallController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,7 +24,7 @@ Auth::routes();
 Route::group(['middleware' => 'auth:admin'], function () {
 
     //Home page- view hall
-    Route::get('/admin/home', [AdminController::class, 'index']);
+    Route::get('/admin/home', [AdminController::class, 'index'])->name('admin.home');
 
     //Add a new hall
     Route::view("/admin/addHall", "/admin/addHall");
@@ -35,6 +35,11 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::post('/admin/editHall/{id}', [HallController::class, 'editHall']);
 
     //Delete an existing hall
+    Route::get('/admin/deleteHall/{id}', [HallController::class, 'deleteHall']);
+
+    //Profile
+    Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('profile.admin');
+    Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
 
 
 

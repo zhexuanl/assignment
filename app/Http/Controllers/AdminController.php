@@ -19,4 +19,5 @@ class AdminController extends Controller
             return view('admin.admin-home', compact('hallList'));
         }
     }
+
 }

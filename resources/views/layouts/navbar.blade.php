@@ -2,7 +2,7 @@
     <img src="/logo/videobee_logo.png" height="30px" width="30px" class="mb-2" />
     @if(Auth::check() && strpos(Auth::user()->email, '@admin.com'))
     <a class="navbar-brand ml-3 nav-header " href="{{ url('/admin/home') }}">
-        VideoBee
+        Admin
     </a>
     @elseif(Auth::check())
     <a class="navbar-brand ml-3 nav-header " href="{{ url('/user/home') }}">
