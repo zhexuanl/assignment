@@ -26,5 +26,15 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         //
+
+        Gate::define('isAdmin', function($user) {
+            $splitEmail = explode('@', $user->email);
+            return $splitEmail[1] == 'admin.com';
+        });
+
+        Gate::define('isUser', function($user) {
+            $splitEmail = explode('@', $user->email);
+            return $splitEmail[1] != 'admin.com';
+        });
     }
 }
