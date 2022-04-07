@@ -4,7 +4,10 @@ use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HallController;
+use App\Http\Controllers\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -40,6 +43,9 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
 
 });
-
-    Route::get('/user/home', [HallController::class, 'index']);
+Route::group(['middleware' => 'auth:user'], function () {
+    Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
     Route::post('/user/bookHall', [BookingController::class, 'store']);
+});
+
+Route::get('/logout',[LoginController::class,'logout']);
