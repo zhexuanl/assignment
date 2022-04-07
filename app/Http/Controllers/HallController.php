@@ -79,5 +79,18 @@ class HallController extends Controller
         }
     }
 
-    
+    public function index()
+    {
+        return view('halls.index', ['halls' => Hall::all()]) ;
+    }
+
+    public function show(Hall $hall)
+    {
+        return view('halls.show', [
+            'hall' => $hall
+        ]);
+    }
+
+
+
 }
