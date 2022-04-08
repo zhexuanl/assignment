@@ -10,7 +10,7 @@ class BookingController extends Controller
 {
     public function index()
     {
-        return view('bookings.index', ['bookings' => Booking::all(), 'halls' => Hall::all()]);
+        return view('bookings.index', ['bookings' => Booking::latest()->paginate(12)]);
     }
 
 
