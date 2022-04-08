@@ -28,7 +28,7 @@
     <button
         type="button"
         class="mt-10 w-full py-3 rounded-xl border border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-gray-50 transition duration-150 ease-in-out"
-        data-bs-toggle="modal" data-bs-target="#bookHallModal"
+        data-bs-toggle="modal" data-bs-target="#bookHallModal-{{$hall->id}}"
     >
         Read More
     </button>
