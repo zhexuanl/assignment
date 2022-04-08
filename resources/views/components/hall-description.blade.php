@@ -22,19 +22,16 @@
                 <span>{{$hall->fee}} </span>
 
 
-{{--                @php--}}
-{{--                    use App\Models\Booking;--}}
-{{--                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');--}}
-{{--                    foreach ($bookDates as $bookDate)--}}
-{{--                        {--}}
-{{--                        echo $bookDate;--}}
-{{--                        }--}}
+                @php
+                    use App\Models\Booking;
+                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');
 
-{{--                @endphp--}}
+
+                @endphp
                 {{--@dd($attributes)--}}
-{{--                @foreach($a as $b)--}}
-{{--                    {{$b}}--}}
-{{--                @endforeach--}}
+                @foreach($bookDates as $book)
+                    {{$book->book_date}}
+                @endforeach
 
 
                 <form method="POST" action="/user/bookHall">
@@ -53,7 +50,6 @@
                             class=" w-48 relative bg-purple-500 text-white p-3 rounded-xl text-sm uppercase font-semibold tracking-tight overflow-visible">
                             Book Now
                         </button>
-
                     </div>
                 </form>
             </div>
