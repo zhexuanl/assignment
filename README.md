@@ -9,6 +9,10 @@
 
 ## How to Start after clone
 
+- Install relevant dependency
+- Change name of .env file
+- Generate new App Key
+
 ```
 composer install 
 mv .env.example .env 
