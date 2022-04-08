@@ -70,6 +70,7 @@
                 </div>
             </div>
         </div>
+        {{$booking->links}}
     </section>
 @endsection
 

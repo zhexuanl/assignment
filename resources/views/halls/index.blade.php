@@ -25,7 +25,10 @@
         @endforeach
     </div>
 
-    {{-- {{$halls->links()}}--}}
+    <div class="ml-4">
+        {{$halls->links()}}
+    </div>
+
     @else
     <p class="text-center"> No halls available yet ......</p>
     @endif

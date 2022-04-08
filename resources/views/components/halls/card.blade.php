@@ -1,7 +1,7 @@
 @props(['hall'])
 
 
-<div {{$attributes->merge(['class' => 'w-80 rounded-2xl border shadow py-12 px-8  transition-colors duration-300
+<div {{$attributes->merge(['class' => 'w-80 mb-4 rounded-2xl border shadow py-12 px-8  transition-colors duration-300
         hover:bg-gray-100
         hover:border-opacity-5'])}}>
 
