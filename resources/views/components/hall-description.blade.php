@@ -22,24 +22,42 @@
                 <span>{{$hall->fee}} </span>
 
 
-                <form type="POST" action="/user/bookHall">
-                    <input type="date" name="book_date" id="book_date" value="{{old('book_date')}}" />
-{{--                    <input type="hidden" name="user_id" id="user_id" value="{{auth()->user()->id}}">--}}
+{{--                @php--}}
+{{--                    use App\Models\Booking;--}}
+{{--                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');--}}
+{{--                    foreach ($bookDates as $bookDate)--}}
+{{--                        {--}}
+{{--                        echo $bookDate;--}}
+{{--                        }--}}
+
+{{--                @endphp--}}
+                {{--@dd($attributes)--}}
+{{--                @foreach($a as $b)--}}
+{{--                    {{$b}}--}}
+{{--                @endforeach--}}
+
+
+                <form method="POST" action="/user/bookHall">
+                    @csrf
+                    <input type="hidden" name="user_id" id="user_id" value="{{auth()->user()->id}}">
                     <input type="hidden" name="hall_id" id="hall_id" value="{{$hall->id}}">
                     <input type="hidden" name="total_fee" id="total_fee" value="{{$hall->fee}}">
+                    <input type="date" name="book_date" id="book_date" value="{{old('book_date')}}"/>
+                    @error('book_date')
+                    <p class="text-red-500 text-xs mt-2">{{$message}}</p>
+                    @enderror
+
+                    <div class="flex justify-center items-center p-8">
+                        <button
+                            type="submit"
+                            class=" w-48 relative bg-purple-500 text-white p-3 rounded-xl text-sm uppercase font-semibold tracking-tight overflow-visible">
+                            Book Now
+                        </button>
+
+                    </div>
                 </form>
-
-
-                <div class="flex justify-center items-center p-8">
-                    <button
-                        type="submit"
-                        class=" w-48 relative bg-purple-500 text-white p-3 rounded-xl text-sm uppercase font-semibold tracking-tight overflow-visible">
-                      Book Now
-                    </button>
-
-                </div>
-
             </div>
+
         </div>
     </div>
 </div>

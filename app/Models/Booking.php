@@ -9,6 +9,8 @@ class Booking extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function hall()
     {
         return $this->belongsTo(Hall::class);

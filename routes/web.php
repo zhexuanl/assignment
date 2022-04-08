@@ -46,6 +46,8 @@ Route::group(['middleware' => 'auth:admin'], function () {
 Route::group(['middleware' => 'auth:user'], function () {
     Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
     Route::post('/user/bookHall', [BookingController::class, 'store']);
+    Route::get('user/bookings', [BookingController::class, 'index']);
+    Route::delete('/user/bookings/{booking:id}', [BookingController::class, 'destroy']);
 });
 
 Route::get('/logout',[LoginController::class,'logout']);
