@@ -1,9 +1,13 @@
 <?php
 
+use App\Http\Controllers\BookingController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HallController;
+use App\Http\Controllers\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,9 +19,6 @@ use App\Http\Controllers\HallController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
 
@@ -41,6 +42,12 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('profile.admin');
     Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
 
-
-
 });
+Route::group(['middleware' => 'auth:user'], function () {
+    Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
+    Route::post('/user/bookHall', [BookingController::class, 'store']);
+    Route::get('user/bookings', [BookingController::class, 'index']);
+    Route::delete('/user/bookings/{booking:id}', [BookingController::class, 'destroy']);
+});
+
+Route::get('/logout',[LoginController::class,'logout']);

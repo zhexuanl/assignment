@@ -15,4 +15,8 @@ class Hall extends Model
         'name', 'capacity', 'type', 'description', 'fee'
     ];
 
+    public  function booking()
+    {
+        return $this->hasOne(Booking::class);
+    }
 }
