@@ -14,7 +14,7 @@
         </span>
 
         <div>
-            <p class="text-3xl text-gray-700 font-semibold"> {{$hall->name}} </p>
+            <p class="text-3xl text-gray-700 font-semibold pb-2"> {{$hall->name}} </p>
 
         </div>
     </div>

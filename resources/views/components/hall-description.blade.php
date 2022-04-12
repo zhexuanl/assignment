@@ -42,7 +42,7 @@
                     <input type="hidden" name="user_id" id="user_id" value="{{auth()->user()->id}}">
                     <input type="hidden" name="hall_id" id="hall_id" value="{{$hall->id}}">
                     <input type="hidden" name="total_fee" id="total_fee" value="{{$hall->fee}}">
-                    <input type="date" name="book_date" id="book_date" class="border" value="{{old('book_date')}}"/>
+                    <input class="mt-3 " type="date" name="book_date" id="book_date" class="border" value="{{old('book_date')}}"/>
                     @error('book_date')
                     <p class="text-red-500 text-xs mt-2">{{$message}}</p>
                     @enderror
