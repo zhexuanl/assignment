@@ -15,14 +15,16 @@
 
         <div>
             <p class="text-3xl text-gray-700 font-semibold"> {{$hall->name}} </p>
-            <p class="text-xl text-gray-700 font-semibold mt-1"> {{$hall->fee}} </p>
-            <p class="text-sm text-gray-700 font-semibold mt-1"> RM per day </p>
+
         </div>
     </div>
 
 
     <!-- Description -->
-    <p class="text-sm text-gray-700 font-light mt-5 leading-7"> {{$hall->description}} </p>
+    <div class="flex-row flex mt-3">
+        <h1 class="text-xl text-info text-gray-700 font-semibold mt-1"> {{$hall->fee}} </h1>
+        <p class="text-sm pl-1 text-gray-700 font-semibold mt-1"> RM per day </p>
+    </div>
 
     <!-- CTA Button -->
     <button

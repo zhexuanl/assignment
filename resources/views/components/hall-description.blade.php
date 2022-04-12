@@ -7,7 +7,7 @@
             class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
             <div
                 class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
-                <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalXlLabel">
+                <h5 class="text-xl  leading-normal text-gray-800" id="exampleModalXlLabel">
                     {{$hall->name}}
                 </h5>
                 <button type="button"
@@ -15,23 +15,26 @@
                         data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body relative p-4">
-                <div>
-                    {{$hall->description}}
+                <div class="">
+                    <p class="text-center">{{$hall->description}}</p>
                 </div>
 
-                <span>{{$hall->fee}} </span>
+                <div class="flex-row flex">
+                    <h5>Fee: RM</h5>
+                    <span class="text-info">{{$hall->fee}} </span>
+                </div>
 
 
-                @php
-                    use App\Models\Booking;
-                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');
+                {{--                @php--}}
+                {{--                    use App\Models\Booking;--}}
+                {{--                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');--}}
 
 
-                @endphp
-                {{--@dd($attributes)--}}
-                @foreach($bookDates as $book)
-                    {{$book->book_date}}
-                @endforeach
+                {{--                @endphp--}}
+                {{--                --}}{{--@dd($attributes)--}}
+                {{--                @foreach($bookDates as $book)--}}
+                {{--                    {{$book->book_date}}--}}
+                {{--                @endforeach--}}
 
 
                 <form method="POST" action="/user/bookHall">
@@ -39,7 +42,7 @@
                     <input type="hidden" name="user_id" id="user_id" value="{{auth()->user()->id}}">
                     <input type="hidden" name="hall_id" id="hall_id" value="{{$hall->id}}">
                     <input type="hidden" name="total_fee" id="total_fee" value="{{$hall->fee}}">
-                    <input type="date" name="book_date" id="book_date" value="{{old('book_date')}}"/>
+                    <input type="date" name="book_date" id="book_date" class="border" value="{{old('book_date')}}"/>
                     @error('book_date')
                     <p class="text-red-500 text-xs mt-2">{{$message}}</p>
                     @enderror
