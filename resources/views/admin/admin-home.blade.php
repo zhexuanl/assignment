@@ -1,6 +1,6 @@
 @extends('layouts.app')
-
 @section('content')
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -17,7 +17,7 @@
 
 
             <div class="row">
-                <div class="col-12 col-md-6 d-flex justify-content-end">
+                <div class="col-12 col-md-6 d-flex justify-content-start">
                     <a class="btn btn-primary my-3" href="{{ url('/admin/addHall')}}">Add hall</a>
                 </div>
             </div>
@@ -47,7 +47,10 @@
                             <td scope="col" style="width:12%">{{ $data->type}}</td>
                             <td scope="col" style="width:32%;">{{ $data->description}}</td>
                             <td scope="col" style="width:12%">{{ $data->fee}}</td>
-                            <td scope="col" style="width:12%"><a background-color="green" href={{"editHall/".$data['id']}}> Update</a> <a background-color="red" href={{"deleteHall/".$data['id']}}> Delete</a></td>
+                            <td scope="col" style="width:12%">
+                                <a class="btn btn-primary" href={{"editHall/".$data['id']}}> Update</a>
+                                <a class="btn btn-warning" href={{"deleteHall/".$data['id']}}> Delete</a>
+                            </td>
                         </tr>
                         @endforeach
                         @else
