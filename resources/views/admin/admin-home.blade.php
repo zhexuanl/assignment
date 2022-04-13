@@ -36,10 +36,10 @@
 
                         </tr>
                     </thead>
-                    <tbody >
-                        
+                    <tbody>
+
                         @if(!empty($hallList) && $hallList->count() > 0)
-                        
+
                         @foreach($hallList as $key => $data)
                         <tr class="text-center">
                             <td scope="col" style="width:20%">{{ $data->name }} </td>
@@ -47,7 +47,7 @@
                             <td scope="col" style="width:12%">{{ $data->type}}</td>
                             <td scope="col" style="width:32%;">{{ $data->description}}</td>
                             <td scope="col" style="width:12%">{{ $data->fee}}</td>
-                            <td scope="col" style="width:12%"><a href={{"editHall/".$data['id']}}> Update</a>  <a href={{"deleteHall/".$data['id']}}> Delete</a></td>
+                            <td scope="col" style="width:12%"><a background-color="green" href={{"editHall/".$data['id']}}> Update</a> <a background-color="red" href={{"deleteHall/".$data['id']}}> Delete</a></td>
                         </tr>
                         @endforeach
                         @else

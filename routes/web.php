@@ -24,6 +24,11 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth:admin'], function () {
 
+
+    Route::get('/', function () {
+        return redirect("login");
+    });
+
     //Home page- view hall
     Route::get('/admin/home', [AdminController::class, 'index'])->name('admin.home');
 
@@ -41,7 +46,6 @@ Route::group(['middleware' => 'auth:admin'], function () {
     //Profile
     Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('profile.admin');
     Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
-
 });
 Route::group(['middleware' => 'auth:user'], function () {
     Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
@@ -50,4 +54,4 @@ Route::group(['middleware' => 'auth:user'], function () {
     Route::delete('/user/bookings/{booking:id}', [BookingController::class, 'destroy']);
 });
 
-Route::get('/logout',[LoginController::class,'logout']);
+Route::get('/logout', [LoginController::class, 'logout']);

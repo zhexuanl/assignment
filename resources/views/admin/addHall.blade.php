@@ -3,9 +3,9 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-lg-12">
+        <div class="col-md-8">
             <div class="card">
-                <div class="admin_title mt-3">Add Hall Item</div>
+                <div class="card-header">Add Hall Item</div>
                 <div class="card-body">
                     <div class="container-fluid text-center">
                         <form id="addHallForm" role="form" action="addHall" method="POST" enctype="multipart/form-data">
@@ -13,7 +13,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group row">
 
-                                    <label class="col-form-label" style="margin-left: 3%">Hall Name :</label>
+                                    <label class="col-form-label" style="margin-left: 3%">Hall Name</label>
                                     <input class="admin_inputName form-control @error('name') is-invalid @enderror" type="text" id="name" name="name" placeholder="Enter Name" value="{{ old('name') }}" autofocus>
                                     @error('name')
                                     <span class="invalid-feedback" role="alert">
@@ -22,74 +22,72 @@
                                     @enderror
 
                                 </div>
-                                <div class="form-group row">
-                                    <div class="col-sm-12" style="display: flex;margin-top: 1%">
+                                <div class="col-sm-12">
+                                    <div class="form-group row">
 
-                                        <div class="col-sm-10" style="margin-left: 1%;">
+                                        <label class="col-form-label" style="margin-left: 3%">Capacity</label>
+                                        <input class="admin_input form-control @error('capacity') is-invalid @enderror" type="text" id="capacity" name="capacity" placeholder="Enter Capacity" value="{{ old('capacity') }}">
+                                        @error('capacity')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong style="float: left;margin-left: 15%">{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-sm-12">
+                                        <div class="form-group row">
+                                            <label class="col-form-label" style="margin-left: 3%"> Hall Type</label>
+                                            <input class="admin_input form-control @error('type') is-invalid @enderror" type="text" id="type" name="type" placeholder="Enter Type" value="{{ old('type') }}">
+                                            @error('type')
+                                            <span class="invalid-feedback" role="alert">
+                                                <strong style="float: left;margin-left: 15%">{{ $message }}</strong>
+                                            </span>
+                                            @enderror
+                                        </div>
+
+
+                                        <div class="col-sm-12">
                                             <div class="form-group row">
-                                                <div class="row-cols-10">
-                                                    <label class="inputLbl col-form-label">Capacity:</label>
+                                                <label class="col-form-label" style="margin-left: 3%"> Description</label>
+                                                <input class="admin_input form-control @error('description') is-invalid @enderror" type="text" id="description" name="description" placeholder="Enter description" value="{{ old('description') }}">
+                                                @error('description')
+                                                <span class="invalid-feedback" role="alert">
+                                                    <strong style="float: left;margin-left: 15%">{{ $message }}</strong>
+                                                </span>
+                                                @enderror
+                                            </div>
 
-                                                    <input class="admin_input form-control @error('capacity') is-invalid @enderror" type="text" id="capacity" name="capacity" placeholder="Enter Capacity" value="{{ old('capacity') }}">
-                                                    @error('capacity')
-                                                    <span style="width: 100%" class="invalid-feedback" role="alert">
-                                                        <strong style="float: left;margin-left: 10%">{{ $message }}</strong>
-                                                    </span>
-                                                    @enderror
-                                                </div>
-
-                                                <div class="row-cols-10">
-                                                    <label class="inputLbl col-form-label"> Hall Type:</label>
-                                                    <input class="admin_input form-control @error('type') is-invalid @enderror" type="text" id="type" name="type" placeholder="Enter Type" value="{{ old('type') }}">
-                                                    @error('type')
+                                            <div class="col-sm-12">
+                                                <div class="form-group row">
+                                                    <label class="col-form-label" style="margin-left: 3%"> Hall Fee Per Day (RM)</label>
+                                                    <input class="admin_input form-control @error('fee') is-invalid @enderror" type="text" id="fee" name="fee" placeholder="Enter fee" value="{{ old('fee') }}">
+                                                    @error('fee')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong style="float: left;margin-left: 15%">{{ $message }}</strong>
                                                     </span>
                                                     @enderror
                                                 </div>
                                             </div>
-
-                                            <div class="form-group row">
-                                                <div class="row-cols-10">
-                                                    <label class="inputLbl col-form-label"> Description:</label>
-                                                    <input class="admin_input form-control @error('description') is-invalid @enderror" type="text" id="description" name="description" placeholder="Enter description" value="{{ old('description') }}">
-                                                    @error('description')
-                                                    <span style="width: 100%" class="invalid-feedback" role="alert">
-                                                        <strong style="float: left;margin-left: 10%">{{ $message }}</strong>
-                                                    </span>
-                                                    @enderror
-                                                </div>
-
-                                                <div class="row-cols-10">
-                                                    <div class="row-cols-10">
-                                                        <label class="inputLbl col-form-label"> Hall Fee Per Day (RM):</label>
-                                                        <input class="admin_input form-control @error('fee') is-invalid @enderror" type="text" id="fee" name="fee" placeholder="Enter fee" value="{{ old('fee') }}">
-                                                        @error('fee')
-                                                        <span style="width: 100%" class="invalid-feedback" role="alert">
-                                                            <strong style="float: left;margin-left: 10%">{{ $message }}</strong>
-                                                        </span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <br>
-                                            <div class="form-group row" style="float: right;margin-right: 8%;">
-                                                <a type="button" class="btn btn-danger btn-md " href="/admin/home">Cancel</a>
-                                                <button id="addBtn" type="submit" class="btn btn-success btn-md ml-md-2 ">
-                                                    Add Hall
-                                                </button>
-                                            </div>
                                         </div>
+                                    </div>
+
+                                    <br>
+                                    <div class="d-flex">
+                                        <button id="addBtn" type="submit" class="btn btn-success btn-md ml-md-2 ">
+                                            Add Hall
+                                        </button>
+                                        <a type="button" class="btn btn-danger btn-md " href="/admin/home">Cancel</a>
                                     </div>
                                 </div>
                             </div>
-                        </form>
                     </div>
                 </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>
 @endsection
 
