@@ -51,13 +51,13 @@
                 <a class="nav-link nav-header" href="bookings">Manage Bookings</a>
             </li>
             <li class="nav-item mt-md-2 mr-md-2">
-                <a class="nav-link-item nav-header" href="{{ '/user/home'}}">{{ __('Home') }}</a>
+                <a class="nav-link-item nav-header" href="{{ '/user/home'}}">{{ __('Home') }} |</a>
             </li>
 
             @endcan
             <li class="nav-item dropdown">
                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                    {{ Auth::user()->username }}
+                    {{ Auth::user()->name }}
                 </a>
 
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
