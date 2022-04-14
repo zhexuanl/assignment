@@ -1,12 +1,12 @@
 <div class="container">
-    <img src="/logo/hall_logo.png" height="30px" width="30px" class="mb-2" />
+    <img src="/logo/hall_logo.png" height="50px" width="50x" class="m-1 p-1" />
     @if(Auth::check() && strpos(Auth::user()->email, '@admin.com'))
     <a class="navbar-brand ml-3 nav-header " href="{{ url('/admin/home') }}">
-        Hi Admin {{Auth::check()}} {{Auth::user()->email}} , Welcome to Pow Pow Multipurpose Hall Booking System
+        Hi Admin, Welcome to Pow Pow Multipurpose Hall Booking System
     </a>
     @elseif(Auth::check() && Auth::user()->email)
     <a class="navbar-brand ml-3 nav-header " href="{{ url('/user/home') }}">
-        Hi User {{Auth::user()->email}} , Welcome to Pow Pow Multipurpose Hall Booking System
+        Hi User, Welcome to Pow Pow Multipurpose Hall Booking System
     </a>
     @else
     <a class="navbar-brand ml-3 nav-header " href="{{ url('/login') }}">
