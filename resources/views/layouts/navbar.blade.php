@@ -45,10 +45,10 @@
             <li class="nav-item mt-md-2 mr-md-2">
                 <a class="nav-link-item nav-header" href="{{ '/admin/home'}}">{{ __('Home') }}</a>
             </li>
+            @elsecan('isUser')
             <li class="nav-item pr-5">
                 <a class="nav-link nav-header" href="bookings">Manage Bookings</a>
             </li>
-            @elsecan('isUser')
             <li class="nav-item mt-md-2 mr-md-2">
                 <a class="nav-link-item nav-header" href="{{ '/user/home'}}">{{ __('Home') }} |</a>
             </li>
