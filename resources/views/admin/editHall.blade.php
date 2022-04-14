@@ -13,7 +13,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group row">
                                     <div class="row-cols-10">
-                                        <label class="col-form-label">Hall Name :</label>
+                                        <label class="col-form-label">Hall Name </label>
                                         <input class="admin_inputName form-control @error('name') is-invalid @enderror" type="text" id="name" name="name" placeholder="Enter Name" value="{{ $data['name'] }}" autofocus>
                                         @error('name')
                                         <span class="invalid-feedback" role="alert">
@@ -22,7 +22,7 @@
                                         @enderror
                                     </div>
                                     <div class="row-cols-10">
-                                        <label class="inputLbl col-form-label"> Capacity:</label>
+                                        <label class="inputLbl col-form-label"> Capacity </label>
                                         <input class="admin_input form-control @error('capacity') is-invalid @enderror" type="text" id="capacity" name="capacity" placeholder="Enter capacity" value="{{ $data['capacity'] }}">
                                         @error('capacity')
                                         <span style="width: 100%" class="invalid-feedback" role="alert">
@@ -31,7 +31,7 @@
                                         @enderror
                                     </div>
                                     <div class="row-cols-10">
-                                        <label class="inputLbl col-form-label"> Hall Type:</label>
+                                        <label class="inputLbl col-form-label"> Hall Type </label>
                                         <input class="admin_input form-control @error('type') is-invalid @enderror" type="text" id="type" name="type" placeholder="Enter Type" value="{{ $data['type'] }}">
                                         @error('type')
                                         <span class="invalid-feedback" role="alert">
@@ -41,7 +41,7 @@
                                     </div>
 
                                     <div class="row-cols-10">
-                                        <label class="inputLbl col-form-label"> Description:</label>
+                                        <label class="inputLbl col-form-label"> Description </label>
                                         <input class="admin_input form-control @error('description') is-invalid @enderror" type="text" id="description" name="description" placeholder="Enter description" value="{{ $data['description'] }}">
                                         @error('description')
                                         <span style="width: 100%" class="invalid-feedback" role="alert">
@@ -51,7 +51,7 @@
                                     </div>
 
                                     <div class="row-cols-10">
-                                        <label class="inputLbl col-form-label "> Hall Fee Per Day (RM):</label>
+                                        <label class="inputLbl col-form-label "> Hall Fee Per Day (RM) </label>
                                         <input class="admin_input form-control @error('fee') is-invalid @enderror" type="text" id="fee" name="fee" value="{{ $data['fee'] }}">
                                         @error('fee')
                                         <span class="invalid-feedback" role="alert">
@@ -67,7 +67,7 @@
                                     <br>
 
                                     <div class="float-right">
-                                        <button id="editBtn" type="submit" class="btn btn-success btn-lg float-right">
+                                        <button id="editBtn" type="submit" class="btn btn-success btn-lg float-right ml-2">
                                             Save Changes
                                         </button>
                                         <a type="button" class="btn btn-danger btn-lg float-right" href="/admin/home">Cancel</a>
