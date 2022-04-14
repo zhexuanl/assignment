@@ -72,11 +72,11 @@
                                     </div>
 
                                     <br>
-                                    <div class="d-flex">
-                                        <button id="addBtn" type="submit" class="btn btn-success btn-md ml-md-2 ">
+                                    <div class="float-right">
+                                        <button id="addBtn" type="submit" class="btn btn-success btn-lg float-right">
                                             Add Hall
                                         </button>
-                                        <a type="button" class="btn btn-danger btn-md " href="/admin/home">Cancel</a>
+                                        <a type="button" class="btn btn-danger btn-lg float-right" href="/admin/home">Cancel</a>
                                     </div>
                                 </div>
                             </div>

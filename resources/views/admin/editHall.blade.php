@@ -61,11 +61,16 @@
                                     </div>
 
                                     <br>
-                                    <div class="d-flex">
-                                        <button id="editBtn" type="submit" class="btn btn-success btn-md ml-md-2">
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
+
+                                    <div class="float-right">
+                                        <button id="editBtn" type="submit" class="btn btn-success btn-lg float-right">
                                             Save Changes
                                         </button>
-                                        <a type="button" class="btn btn-danger btn-md " href="/admin/home">Cancel</a>
+                                        <a type="button" class="btn btn-danger btn-lg float-right" href="/admin/home">Cancel</a>
                                     </div>
                                 </div>
                             </div>
