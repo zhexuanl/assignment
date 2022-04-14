@@ -11,7 +11,7 @@
                         <form id="addHallForm" role="form" action="addHall" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="col-sm-12">
-                                <div class="form-group row">
+                                <div class="row-cols-10">
 
                                     <label class="col-form-label" style="margin-left: 3%">Hall Name</label>
                                     <input class="admin_inputName form-control @error('name') is-invalid @enderror" type="text" id="name" name="name" placeholder="Enter Name" value="{{ old('name') }}" autofocus>
@@ -23,7 +23,7 @@
 
                                 </div>
                                 <div class="col-sm-12">
-                                    <div class="form-group row">
+                                    <div class="row-cols-10">
 
                                         <label class="col-form-label" style="margin-left: 3%">Capacity</label>
                                         <input class="admin_input form-control @error('capacity') is-invalid @enderror" type="text" id="capacity" name="capacity" placeholder="Enter Capacity" value="{{ old('capacity') }}">
@@ -35,7 +35,7 @@
                                     </div>
 
                                     <div class="col-sm-12">
-                                        <div class="form-group row">
+                                        <div class="row-cols-10">
                                             <label class="col-form-label" style="margin-left: 3%"> Hall Type</label>
                                             <input class="admin_input form-control @error('type') is-invalid @enderror" type="text" id="type" name="type" placeholder="Enter Type" value="{{ old('type') }}">
                                             @error('type')
@@ -47,7 +47,7 @@
 
 
                                         <div class="col-sm-12">
-                                            <div class="form-group row">
+                                            <div class="row-cols-10">
                                                 <label class="col-form-label" style="margin-left: 3%"> Description</label>
                                                 <input class="admin_input form-control @error('description') is-invalid @enderror" type="text" id="description" name="description" placeholder="Enter description" value="{{ old('description') }}">
                                                 @error('description')
@@ -58,7 +58,7 @@
                                             </div>
 
                                             <div class="col-sm-12">
-                                                <div class="form-group row">
+                                                <div class="row-cols-10">
                                                     <label class="col-form-label" style="margin-left: 3%"> Hall Fee Per Day (RM)</label>
                                                     <input class="admin_input form-control @error('fee') is-invalid @enderror" type="text" id="fee" name="fee" placeholder="Enter fee" value="{{ old('fee') }}">
                                                     @error('fee')
@@ -72,11 +72,11 @@
                                     </div>
 
                                     <br>
-                                    <div class="d-flex">
-                                        <button id="addBtn" type="submit" class="btn btn-success btn-md ml-md-2 ">
+                                    <div class="float-right">
+                                        <button id="addBtn" type="submit" class="btn btn-success btn-lg float-right ml-2">
                                             Add Hall
                                         </button>
-                                        <a type="button" class="btn btn-danger btn-md " href="/admin/home">Cancel</a>
+                                        <a type="button" class="btn btn-danger btn-lg float-right" href="/admin/home">Cancel</a>
                                     </div>
                                 </div>
                             </div>

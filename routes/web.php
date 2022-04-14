@@ -25,9 +25,7 @@ Auth::routes();
 Route::group(['middleware' => 'auth:admin'], function () {
 
 
-    Route::get('/', function () {
-        return redirect("login");
-    });
+
 
     //Home page- view hall
     Route::get('/admin/home', [AdminController::class, 'index'])->name('admin.home');
@@ -42,16 +40,16 @@ Route::group(['middleware' => 'auth:admin'], function () {
 
     //Delete an existing hall
     Route::get('/admin/deleteHall/{id}', [HallController::class, 'deleteHall']);
-
-    //Profile
-    Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('profile.admin');
-    Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
 });
 Route::group(['middleware' => 'auth:user'], function () {
     Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
     Route::post('/user/bookHall', [BookingController::class, 'store']);
     Route::get('user/bookings', [BookingController::class, 'index']);
     Route::delete('/user/bookings/{booking:id}', [BookingController::class, 'destroy']);
+});
+
+Route::get('/', function () {
+    return redirect("login");
 });
 
 Route::get('/logout', [LoginController::class, 'logout']);
