@@ -24,19 +24,6 @@
                     <span class="text-info">{{$hall->fee}} </span>
                 </div>
 
-
-                {{--                @php--}}
-                {{--                    use App\Models\Booking;--}}
-                {{--                    $bookDates =  Booking::where('hall_id', $hall->id)->get('book_date');--}}
-
-
-                {{--                @endphp--}}
-                {{--                --}}{{--@dd($attributes)--}}
-                {{--                @foreach($bookDates as $book)--}}
-                {{--                    {{$book->book_date}}--}}
-                {{--                @endforeach--}}
-
-
                 <form method="POST" action="/user/bookHall">
                     @csrf
                     <input type="hidden" name="user_id" id="user_id" value="{{auth()->user()->id}}">

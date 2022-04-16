@@ -38,6 +38,8 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::get('/admin/editHall/{id}', [HallController::class, 'showEdit']);
     Route::post('/admin/editHall/{id}', [HallController::class, 'editHall']);
 
+    Route::delete('/admin/{booking:id}', [BookingController::class, 'destroy']);
+
     //Delete an existing hall
     Route::get('/admin/deleteHall/{id}', [HallController::class, 'deleteHall']);
 });

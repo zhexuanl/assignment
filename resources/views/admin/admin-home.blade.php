@@ -16,9 +16,12 @@
             @endif
 
 
+
             <div class="row">
                 <div class="col-12 col-md-6 d-flex justify-content-start">
-                    <a class="btn btn-primary my-3" href="{{ url('/admin/addHall')}}">Add hall</a>
+                    <a class="btn btn-primary mr-3 my-3" href="{{ url('/admin/addHall')}}">Add hall</a>
+                    <button type="button" class="btn btn-info my-3" data-bs-toggle="modal" data-bs-target="#exampleModalXl">View All Bookings
+                    </button>
                 </div>
             </div>
 
@@ -63,6 +66,21 @@
                 <div class="d-flex justify-content-center mt-md-5">
                     {{$hallList->links()}}
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade fixed top-0 left-0 hidden w-full h-full outline-none overflow-x-hidden overflow-y-auto" id="exampleModalXl" tabindex="-1" aria-labelledby="exampleModalXlLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-xl relative w-auto pointer-events-none">
+        <div class="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+            <div class="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                <h5 class="text-xl font-medium leading-normal text-gray-800" id="exampleModalXlLabel">
+                    View All Bookings
+                </h5>
+                <button type="button" class="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body relative p-4">
+                <x-booking-list :bookings="$bookings" />
             </div>
         </div>
     </div>

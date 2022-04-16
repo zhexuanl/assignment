@@ -8,10 +8,18 @@ use Illuminate\Http\Request;
 
 class BookingController extends Controller
 {
+    // public function index()
+    // {
+    //     return view('bookings.index', ['bookings' => Booking::latest()->paginate(12)]);
+    // }
+
     public function index()
     {
-        return view('bookings.index', ['bookings' => Booking::latest()->paginate(12)]);
+        $booking = Booking::where('user_id', auth()->user()->id)->get();
+        return view('bookings.index', ['bookings' => $booking]);
     }
+
+
 
 
     public function store(Request $request)
