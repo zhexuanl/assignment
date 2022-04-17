@@ -135,5 +135,9 @@
             </div>
         </div>
     </div>
+    @if($booking ?? false)
     {{$booking->links}}
+    @else
+    <h1 class="fw-bold text-center m-5 text-primary">No Booking Found</h1>
+    @endif
 </div>

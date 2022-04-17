@@ -15,8 +15,6 @@
             </div>
             @endif
 
-
-
             <div class="row">
                 <div class="col-12 col-md-6 d-flex justify-content-start">
                     <a class="btn btn-primary mr-3 my-3" href="{{ url('/admin/addHall')}}">Add hall</a>
@@ -24,8 +22,6 @@
                     </button>
                 </div>
             </div>
-
-
             <div class="table table-bordered">
                 <table class="table">
                     <thead>
@@ -51,8 +47,13 @@
                             <td scope="col" style="width:32%;">{{ $data->description}}</td>
                             <td scope="col" style="width:12%">{{ $data->fee}}</td>
                             <td scope="col" style="width:12%">
-                                <a class="btn btn-primary" href={{"editHall/".$data['id']}}> Update</a>
-                                <a class="btn btn-warning" href={{"deleteHall/".$data['id']}}> Delete</a>
+                                <div class="row">
+                                    <div class="d-flex justify-content-center">
+                                        <a class="btn btn-primary mx-1" href={{"editHall/".$data['id']}}> Update</a>
+                                        <a class="btn btn-warning" href={{"deleteHall/".$data['id']}}> Delete</a>
+                                    </div>
+                                </div>
+
                             </td>
                         </tr>
                         @endforeach

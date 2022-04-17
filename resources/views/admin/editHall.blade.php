@@ -60,13 +60,7 @@
                                         @enderror
                                     </div>
 
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <br>
-                                    <br>
-
-                                    <div class="float-right">
+                                    <div class="float-right mt-3">
                                         <button id="editBtn" type="submit" class="btn btn-success btn-lg float-right ml-2">
                                             Save Changes
                                         </button>
