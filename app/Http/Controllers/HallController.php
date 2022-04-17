@@ -11,8 +11,7 @@ class HallController extends Controller
 {
     public function addHall(Request $req, Hall $hall)
     {
-        if (Gate::allows('isAdmin'))
-        {
+        if (Gate::allows('isAdmin')) {
             $req->validate([
 
                 'name' => ['required', 'string'],
@@ -32,25 +31,20 @@ class HallController extends Controller
 
             $req->session()->flash('success', 'New hall is Created Successfully');
             return redirect("admin/home");
-
         }
-
     }
 
     function showEdit($id)
     {
-        if (Gate::allows('isAdmin'))
-        {
+        if (Gate::allows('isAdmin')) {
             $data = Hall::find($id);
             return view("admin/editHall", ['data' => $data]);
         }
-
     }
 
     function editHall(Request $req)
     {
-        if (Gate::allows('isAdmin'))
-        {
+        if (Gate::allows('isAdmin')) {
 
             $data = Hall::find($req->id);
             $data->name = $req->name;
@@ -65,23 +59,20 @@ class HallController extends Controller
             $req->session()->flash('success', 'Hall is Updated Successfully');
             return redirect("admin/home");
         }
-
     }
 
     function deleteHall(Request $req)
     {
-        if (Gate::allows('isAdmin'))
-        {
+        if (Gate::allows('isAdmin')) {
             $data = Hall::find($req->id);
             $data->delete();
             return redirect("admin/home");
-
         }
     }
 
     public function index()
     {
-        return view('halls.index', ['halls' => Hall::latest()->paginate(9)]) ;
+        return view('halls.index', ['halls' => Hall::latest()->paginate(9)]);
     }
 
     public function show(Hall $hall)
@@ -90,7 +81,4 @@ class HallController extends Controller
             'hall' => $hall
         ]);
     }
-
-
-
 }

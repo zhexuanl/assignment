@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Booking;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Hall;
 use App\Models\Admin;
@@ -13,11 +12,11 @@ class AdminController extends Controller
 {
     public function index()
     {
-        if (Gate::allows('isAdmin'))
-        {
-            $hallList = Hall::simplePaginate(10);
-            return view('admin.admin-home', compact('hallList'));
+        if (Gate::allows('isAdmin')) {
+            $hallList = Hall::orderBy('id')->simplePaginate(8);
+            return view('admin.admin-home', compact('hallList'), [
+                'bookings' => Booking::all()
+            ]);
         }
     }
-
 }

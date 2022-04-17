@@ -6,22 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HallController;
-use App\Http\Controllers\UserController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 
 Auth::routes();
-
 Route::group(['middleware' => 'auth:admin'], function () {
 
     //Home page- view hall
@@ -35,19 +21,29 @@ Route::group(['middleware' => 'auth:admin'], function () {
     Route::get('/admin/editHall/{id}', [HallController::class, 'showEdit']);
     Route::post('/admin/editHall/{id}', [HallController::class, 'editHall']);
 
+    //Delete Booking
+    Route::delete('/admin/{booking:id}', [BookingController::class, 'destroy']);
+
     //Delete an existing hall
     Route::get('/admin/deleteHall/{id}', [HallController::class, 'deleteHall']);
-
-    //Profile
-    Route::get('/admin/profile', [AdminController::class, 'adminProfile'])->name('profile.admin');
-    Route::post('/admin/profile', [AdminController::class, 'updateAdminProfile'])->name('update.profile.admin');
-
 });
 Route::group(['middleware' => 'auth:user'], function () {
+
+    //Home page
     Route::get('/user/home', [HallController::class, 'index'])->name('user.home');
+
+    //Craete Booking
     Route::post('/user/bookHall', [BookingController::class, 'store']);
+
+    //Get all personal booked Hall
     Route::get('user/bookings', [BookingController::class, 'index']);
+
+    //Get booking
     Route::delete('/user/bookings/{booking:id}', [BookingController::class, 'destroy']);
 });
 
-Route::get('/logout',[LoginController::class,'logout']);
+Route::get('/', function () {
+    return redirect("login");
+});
+
+Route::get('/logout', [LoginController::class, 'logout']);
