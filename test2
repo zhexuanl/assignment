@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Aggregate Manager</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <!-- DataTables CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <!-- CodeMirror CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e6ecff;
+            --secondary: #4895ef;
+            --dark: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light-bg: #f5f7fa;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            color: #333;
+            background-color: #f5f7fa;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .main-header {
+            padding: 16px 24px;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            z-index: 10;
+        }
+        
+        .content-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .left-pane {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid rgba(0,0,0,0.05);
+            overflow-y: auto;
+            transition: width 0.3s ease;
+        }
+        
+        .right-pane {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        .channel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .channel-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .channel-item:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .channel-item.active {
+            background-color: var(--primary-light);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .channel-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--primary);
+        }
+        
+        .channel-header {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .channel-stats {
+            display: flex;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .stat-item {
+            margin-right: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-item i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+            padding: 16px 20px;
+            font-weight: 600;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .performance-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .performance-good {
+            background-color: var(--success);
+        }
+        
+        .performance-warning {
+            background-color: var(--warning);
+        }
+        
+        .performance-medium {
+            background-color: #f0c419;
+        }
+        
+        .aggregate-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 16px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .aggregate-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            border-left: 3px solid var(--primary);
+        }
+        
+        .aggregate-card-header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .aggregate-card-body {
+            padding: 16px 20px;
+        }
+        
+        .aggregate-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .aggregate-status {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+        }
+        
+        .status-active {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .status-inactive {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--warning);
+        }
+        
+        .aggregate-details {
+            display: flex;
+            font-size: 13px;
+            color: #666;
+            flex-wrap: wrap;
+        }
+        
+        .aggregate-detail-item {
+            margin-right: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .aggregate-detail-label {
+            font-weight: 500;
+            margin-right: 4px;
+        }
+        
+        .aggregate-actions {
+            display: flex;
+        }
+        
+        .aggregate-actions button {
+            border: none;
+            background: none;
+            padding: 6px;
+            margin-left: 8px;
+            border-radius: var(--border-radius);
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        
+        .aggregate-actions button:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark);
+            border-color: var(--dark);
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 16px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+        
+        .badge {
+            padding: 5px 10px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+        
+        .badge-blue {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .badge-purple {
+            background-color: rgba(138, 43, 226, 0.1);
+            color: #8a2be2;
+        }
+        
+        .badge-teal {
+            background-color: rgba(20, 184, 166, 0.1);
+            color: #14b8a6;
+        }
+        
+        .chart-container {
+            height: 120px;
+            margin-bottom: 16px;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        
+        .stats-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .stats-label {
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .form-control, .form-select {
+            border-radius: var(--border-radius);
+            border: 1px solid #ddd;
+            padding: 10px 15px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+        
+        .CodeMirror {
+            height: 300px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+        
+        .empty-state-message {
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .pagination .page-item .page-link {
+            color: var(--primary);
+            border-radius: var(--border-radius);
+            margin: 0 4px;
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        /* Performance summary */
+        .performance-summary {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .perf-indicator {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 16px;
+        }
+        
+        .perf-good {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .perf-medium {
+            background-color: rgba(240, 196, 25, 0.1);
+            color: #f0c419;
+        }
+        
+        .perf-warning {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--warning);
+        }
+        
+        .perf-details {
+            flex-grow: 1;
+        }
+        
+        .perf-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .perf-description {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .left-pane {
+                width: 240px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-container {
+                flex-direction: column;
+            }
+            
+            .left-pane {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+                border-right: none;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+            
+            .right-pane {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Page Header -->
+        <div class="main-header d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-0">Transaction Aggregate Manager</h1>
+            <div>
+                <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#testWorkbenchModal">
+                    <i class="bi bi-beaker"></i> Test Workbench
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div class="content-container">
+            <!-- Left Pane - Channel List -->
+            <div class="left-pane">
+                <div class="p-3">
+                    <div class="search-box">
+                        <i class="bi bi-search"></i>
+                        <input type="text" placeholder="Search channels..." id="channelSearch">
+                    </div>
+                </div>
+                
+                <ul class="channel-list">
+                    <li class="channel-item active" data-channel="C01">
+                        <div class="channel-header">
+                            <span>Channel 01</span>
+                            <span class="badge badge-blue">24 Agg</span>
+                        </div>
+                        <div class="channel-stats">
+                            <div class="stat-item">
+                                <i class="bi bi-clock"></i> 8ms
+                            </div>
+                            <div class="stat-item">
+                                <i class="bi bi-file-code"></i> 124 KB
+                            </div>
+                        </div>
+                    </li>
+                    <li class="channel-item" data-channel="C02">
+                        <div class="channel-header">
+                            <span>Channel 02</span>
+                            <span class="badge badge-blue">13 Agg</span>
+                        </div>
+                        <div class="channel-stats">
+                            <div class="stat-item">
+                                <i class="bi bi-clock"></i> 5ms
+                            </div>
+                            <div class="stat-item">
+                                <i class="bi bi-file-code"></i> 76 KB
+                            </div>
+                        </div>
+                    </li>
+                    <li class="channel-item" data-channel="C03">
+                        <div class="channel-header">
+                            <span>Channel 03</span>
+                            <span class="badge badge-blue">10 Agg</span>
+                        </div>
+                        <div class="channel-stats">
+                            <div class="stat-item">
+                                <i class="bi bi-clock"></i> 12ms
+                            </div>
+                            <div class="stat-item">
+                                <i class="bi bi-file-code"></i> 98 KB
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Right Pane - Aggregates for Selected Channel -->
+            <div class="right-pane">
+                <!-- Selected Channel Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="h4 mb-1">Channel 01</h2>
+                        <p class="text-muted mb-0">24 active aggregates, last updated today at 10:15 AM</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-outline-primary me-2" id="viewProcedureBtn" data-channel="C01" data-bs-toggle="modal" data-bs-target="#viewProcedureModal">
+                            <i class="bi bi-code-square"></i> View Procedure
+                        </button>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newAggregateModal">
+                            <i class="bi bi-plus-lg"></i> New Aggregate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Performance Overview -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-value">24</div>
+                            <div class="stats-label">Active Aggregates</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-value">8ms</div>
+                            <div class="stats-label">Avg. Execution Time</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-value">560K</div>
+                            <div class="stats-label">Daily Transactions</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stats-card">
+                            <div class="stats-value">12.5M</div>
+                            <div class="stats-label">Daily Aggregates</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Summary -->
+                <div class="performance-summary mb-4">
+                    <div class="perf-indicator perf-good">8ms</div>
+                    <div class="perf-details">
+                        <div class="perf-title">Performance Status: Excellent</div>
+                        <div class="perf-description">All aggregates are performing within expected parameters. Average execution time of 8ms is well below threshold of 20ms.</div>
+                    </div>
+                </div>
+                
+                <!-- Search and Filter -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="search-box">
+                            <i class="bi bi-search"></i>
+                            <input type="text" placeholder="Search aggregates..." id="aggregateSearch">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="dropdown d-inline-block">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                                <li><a class="dropdown-item" href="#" data-filter="active">Active Only</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="inactive">Inactive Only</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-filter="sum">SUM Aggregates</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="count">COUNT Aggregates</a></li>
+                                <li><a class="dropdown-item" href="#" data-filter="avg">AVG Aggregates</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" data-filter="clear">Clear Filters</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Aggregates List -->
+                <div class="aggregates-list">
+                    <!-- Aggregate Card 1 -->
+                    <div class="aggregate-card" data-aggregate-id="agg1" data-bs-toggle="modal" data-bs-target="#aggregateDetailsModal">
+                        <div class="aggregate-card-header">
+                            <h3 class="aggregate-title">
+                                <span class="performance-indicator performance-good"></span>
+                                Customer_Hourly_Spend
+                            </h3>
+                            <div class="d-flex align-items-center">
+                                <span class="aggregate-status status-active me-3">Active</span>
+                                <div class="aggregate-actions">
+                                    <button type="button" class="edit-btn" data-action="edit" data-bs-toggle="modal" data-bs-target="#newAggregateModal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="delete-btn" data-action="delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aggregate-card-body">
+                            <div class="aggregate-details">
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Source:</span>
+                                    <span>C01_Details_Transactions</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Types:</span>
+                                    <span>SUM, COUNT</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Intervals:</span>
+                                    <span>Minute, Day</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Execution:</span>
+                                    <span>0.8ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Aggregate Card 2 -->
+                    <div class="aggregate-card" data-aggregate-id="agg2" data-bs-toggle="modal" data-bs-target="#aggregateDetailsModal">
+                        <div class="aggregate-card-header">
+                            <h3 class="aggregate-title">
+                                <span class="performance-indicator performance-good"></span>
+                                Merchant_Daily_Transaction_Count
+                            </h3>
+                            <div class="d-flex align-items-center">
+                                <span class="aggregate-status status-active me-3">Active</span>
+                                <div class="aggregate-actions">
+                                    <button type="button" class="edit-btn" data-action="edit" data-bs-toggle="modal" data-bs-target="#newAggregateModal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="delete-btn" data-action="delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aggregate-card-body">
+                            <div class="aggregate-details">
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Source:</span>
+                                    <span>C01_Details_Transactions</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Types:</span>
+                                    <span>COUNT</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Intervals:</span>
+                                    <span>Day</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Execution:</span>
+                                    <span>0.5ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Aggregate Card 3 -->
+                    <div class="aggregate-card" data-aggregate-id="agg3" data-bs-toggle="modal" data-bs-target="#aggregateDetailsModal">
+                        <div class="aggregate-card-header">
+                            <h3 class="aggregate-title">
+                                <span class="performance-indicator performance-medium"></span>
+                                High_Value_Transactions
+                            </h3>
+                            <div class="d-flex align-items-center">
+                                <span class="aggregate-status status-inactive me-3">Inactive</span>
+                                <div class="aggregate-actions">
+                                    <button type="button" class="edit-btn" data-action="edit" data-bs-toggle="modal" data-bs-target="#newAggregateModal">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="delete-btn" data-action="delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aggregate-card-body">
+                            <div class="aggregate-details">
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Source:</span>
+                                    <span>C01_Details_Transactions</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Types:</span>
+                                    <span>SUM, AVG, MIN, MAX</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Intervals:</span>
+                                    <span>Minute, Day</span>
+                                </div>
+                                <div class="aggregate-detail-item">
+                                    <span class="aggregate-detail-label">Execution:</span>
+                                    <span>1.2ms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Aggregate Configuration Modal -->
+    <div class="modal fade" id="newAggregateModal" tabindex="-1" aria-labelledby="newAggregateModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newAggregateModalLabel">Configure New Aggregate</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="config-container">
+                        <!-- Left Side: SQL Template Form -->
+                        <div class="config-form">
+                            <!-- Basic Information -->
+                            <div class="card">
+                                <div class="card-header">Basic Information</div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="aggregateName" class="form-label">Aggregate Name</label>
+                                            <input type="text" class="form-control" id="aggregateName" placeholder="Unique name for this aggregate">
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="description" class="form-label">Description</label>
+                                            <input type="text" class="form-control" id="description" placeholder="What this aggregate is used for">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="channelSelect" class="form-label">Channel</label>
+                                            <select class="form-select" id="channelSelect">
+                                                <option value="C01" selected>Channel 01</option>
+                                                <option value="C02">Channel 02</option>
+                                                <option value="C03">Channel 03</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="sourceTable" class="form-label">Source Table</label>
+                                            <select class="form-select" id="sourceTable">
+                                                <option value="" selecte
