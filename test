@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aggregate SQL Template Editor</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #e6ecff;
+            --secondary: #4895ef;
+            --dark: #3a0ca3;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --light-bg: #f5f7fa;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            color: #333;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,.05);
+            padding: 16px 20px;
+            font-weight: 600;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark);
+            border-color: var(--dark);
+        }
+        
+        .CodeMirror {
+            height: 450px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+        }
+        
+        .config-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .config-form {
+            flex: 6;
+        }
+        
+        .preview-pane {
+            flex: 5;
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .parameter-pill {
+            display: inline-block;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 16px;
+            padding: 1px 8px;
+            margin: 0 2px 5px 0;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .template-section {
+            display: inline-block;
+            background: #f8f9fa;
+            color: #666;
+            border-radius: 4px;
+            padding: 2px 6px;
+            margin: 0 2px 5px 0;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+        
+        .sql-preview {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            background-color: #282a36;
+            color: #f8f8f2;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            border: 1px solid #44475a;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+        
+        .toolbar-section {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .toolbar-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 13px;
+        }
+        
+        .info-tip {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-left: 3px solid var(--primary);
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .required-var {
+            color: #ff5555;
+            font-weight: 600;
+        }
+        
+        .optional-var {
+            color: #50fa7b;
+            font-weight: 600;
+        }
+        
+        .table-config-preview {
+            padding: 8px;
+            background: #282a36;
+            color: #f8f8f2;
+            border: 1px solid #44475a;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        
+        .comment-block {
+            color: #6272a4;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-block {
+            background-color: rgba(80, 250, 123, 0.1);
+            border: 1px solid rgba(80, 250, 123, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #50fa7b;
+        }
+        
+        @media (max-width: 992px) {
+            .config-container {
+                flex-direction: column;
+            }
+            
+            .preview-pane {
+                position: static;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h3 class="mb-4">Aggregate Template Editor</h3>
+        
+        <div class="config-container">
+            <!-- Left side: SQL Template Editor -->
+            <div class="config-form">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>SQL Template</span>
+                        <div>
+                            <button class="btn btn-sm btn-outline-secondary me-2" id="resetTemplate">
+                                <i class="bi bi-arrow-counterclockwise"></i> Reset Template
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary" id="validateTemplate">
+                                <i class="bi bi-check-circle"></i> Validate
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Template editor toolbar -->
+                        <div class="toolbar">
+                            <div class="toolbar-section">
+                                <div class="toolbar-title">Transaction Parameters</div>
+                                <div>
+                                    <button class="parameter-pill" data-param="@TransactionDateTime">@TransactionDateTime</button>
+                                    <button class="parameter-pill" data-param="@TransactionID">@TransactionID</button>
+                                    <button class="parameter-pill" data-param="@TransactionType">@TransactionType</button>
+                                    <button class="parameter-pill" data-param="@Amount">@Amount</button>
+                                    <button class="parameter-pill" data-param="@CustomerID">@CustomerID</button>
+                                    <button class="parameter-pill" data-param="@MerchantID">@MerchantID</button>
+                                    <button class="parameter-pill" data-param="@Currency">@Currency</button>
+                                </div>
+                            </div>
+                            
+                            <div class="toolbar-section">
+                                <div class="toolbar-title">Common Functions</div>
+                                <div>
+                                    <button class="parameter-pill" data-param="DATEPART(HOUR, @TransactionDateTime)">DATEPART(HOUR, @Tx...)</button>
+                                    <button class="parameter-pill" data-param="DATEPART(WEEKDAY, @TransactionDateTime)">DATEPART(WEEKDAY, @Tx...)</button>
+                                    <button class="parameter-pill" data-param="CONVERT(DATE, @TransactionDateTime)">CONVERT(DATE, @Tx...)</button>
+                                    <button class="parameter-pill" data-param="DATEDIFF(DAY, 0, @TransactionDateTime)">DATEDIFF(DAY, 0, @Tx...)</button>
+                                    <button class="parameter-pill" data-param="ABS(CHECKSUM(@CustomerID))">ABS(CHECKSUM(@Cust...))</button>
+                                </div>
+                            </div>
+                            
+                            <div class="toolbar-section">
+                                <div class="toolbar-title">Template Structure</div>
+                                <div>
+                                    <button class="template-section" data-section="condition">IF Condition Block</button>
+                                    <button class="template-section" data-section="variables">Custom Variables</button>
+                                    <button class="template-section" data-section="outputs">Output Variables</button>
+                                    <button class="template-section" data-section="skipblock">Skip Logic</button>
+                                </div>
+                            </div>
+                            
+                            <div class="toolbar-section">
+                                <div class="toolbar-title">Output Variables</div>
+                                <div>
+                                    <button class="parameter-pill required-var" data-param="@AggregateSum">@AggregateSum</button>
+                                    <button class="parameter-pill required-var" data-param="@AggregateCount">@AggregateCount</button>
+                                    <button class="parameter-pill optional-var" data-param="@AggregateMin">@AggregateMin</button>
+                                    <button class="parameter-pill optional-var" data-param="@AggregateMax">@AggregateMax</button>
+                                    <button class="parameter-pill optional-var" data-param="@AggregateValue">@AggregateValue</button>
+                                    <button class="parameter-pill" data-param="@SkipAggregate">@SkipAggregate</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-tip mb-3">
+                            <i class="bi bi-info-circle me-1"></i> Customize the SQL template with your business logic. Required output variables are <span class="required-var">@AggregateSum</span> and <span class="required-var">@AggregateCount</span>. Set <span class="parameter-pill">@SkipAggregate = 1</span> to skip this aggregate for a transaction.
+                        </div>
+                        
+                        <!-- CodeMirror Editor -->
+                        <div id="sqlTemplateEditor"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right side: Preview -->
+            <div class="preview-pane">
+                <div class="card">
+                    <div class="card-header">Template Generation Preview</div>
+                    <div class="card-body">
+                        <h6 class="mb-3">Aggregate Configuration</h6>
+                        <dl class="row">
+                            <dt class="col-sm-4">Name:</dt>
+                            <dd class="col-sm-8">Customer_Transaction_Analysis</dd>
+                            
+                            <dt class="col-sm-4">Key:</dt>
+                            <dd class="col-sm-8">{CustomerID|{CustID}}_{MerchantID|{MID}}</dd>
+                            
+                            <dt class="col-sm-4">Aggregations:</dt>
+                            <dd class="col-sm-8">SUM, COUNT, MIN, MAX</dd>
+                            
+                            <dt class="col-sm-4">Intervals:</dt>
+                            <dd class="col-sm-8">Minute, Day</dd>
+                        </dl>
+                        
+                        <h6 class="mt-4 mb-3">Generated Code</h6>
+                        <div class="sql-preview">
+<span class="comment-block">-- Customer_Transaction_Analysis Aggregate
+-- Generated from user template</span>
+
+-- Check conditions and calculate values
+IF DATEPART(HOUR, @TransactionDateTime) IN (22, 23, 12) <span class="comment-block">-- Check if hour is 10 PM, 11 PM, or 12 PM</span>
+BEGIN
+    <span class="comment-block">-- Initialize skip flag</span>
+    DECLARE @SkipAggregate BIT = 0;
+    
+    <span class="comment-block">-- Custom variables (from user template)</span>
+    DECLARE @CustomValue DECIMAL(18,2) = @Amount * 1.05;
+    DECLARE @TransactionHour INT = DATEPART(HOUR, @TransactionDateTime);
+    
+    <span class="comment-block">-- Custom logic (from user template)</span>
+    IF @Amount > 1000
+    BEGIN
+        <span class="comment-block">-- Apply special logic for high-value transactions</span>
+        SET @CustomValue = @CustomValue * 1.1;
+    END
+    
+    <span class="comment-block">-- Set output variables (required)</span>
+    SET @AggregateSum = @CustomValue;
+    SET @AggregateCount = 1;
+    SET @AggregateMin = @Amount;
+    SET @AggregateMax = @Amount;
+    
+    <span class="comment-block">-- Calculate aggregate keys</span>
+    <span class="highlight-block">DECLARE @AggKey_CustomerTransactionAnalysis NVARCHAR(255) = @CustomerID + '_' + @MerchantID;
+    DECLARE @KeyHash_CustomerTransactionAnalysis BIGINT = ABS(CHECKSUM(@AggKey_CustomerTransactionAnalysis)) % 1000;</span>
+    
+    <span class="comment-block">-- Only proceed if not skipped</span>
+    IF @SkipAggregate = 0
+    BEGIN
+        <span class="comment-block">-- Insert into shared minute aggregates table variable</span>
+        <span class="highlight-block">INSERT INTO @MinuteAggregates
+        (Aggregate_Name, Aggregate_Key_Dscp, Aggregate_Key, Transaction_Datetime,
+         Aggregate_Sum, Aggregate_Count, Aggregate_Min, Aggregate_Max, Aggregate_Key_Hash)
+        VALUES
+        ('Customer_Transaction_Analysis', 'Customer: ' + @CustomerID + ' Merchant: ' + @MerchantID,
+         @AggKey_CustomerTransactionAnalysis, @TxnMinute, @AggregateSum, @AggregateCount, 
+         @AggregateMin, @AggregateMax, @KeyHash_CustomerTransactionAnalysis);</span>
+        
+        <span class="comment-block">-- Insert into shared day aggregates table variable</span>
+        <span class="highlight-block">INSERT INTO @DayAggregates
+        (Aggregate_Name, Aggregate_Key_Dscp, Aggregate_Key, Transaction_Datetime,
+         Aggregate_Sum, Aggregate_Count, Aggregate_Min, Aggregate_Max, Aggregate_Key_Hash)
+        VALUES
+        ('Customer_Transaction_Analysis', 'Customer: ' + @CustomerID + ' Merchant: ' + @MerchantID,
+         @AggKey_CustomerTransactionAnalysis, @TxnDay, @AggregateSum, @AggregateCount,
+         @AggregateMin, @AggregateMax, @KeyHash_CustomerTransactionAnalysis);</span>
+    END
+END</div>
+
+                        <div class="info-tip mt-3">
+                            <strong>Note:</strong> The highlighted code is automatically generated from your configuration and integrated with your custom template. The system handles efficient batch insertion into aggregate tables.
+                        </div>
+                        
+                        <h6 class="mt-4 mb-3">Stored Procedure Integration</h6>
+                        <div class="table-config-preview">
+                        <p class="mb-0"><strong>Batch Processing:</strong> Your aggregates will be collected in shared table variables and inserted with a single MERGE statement per table, greatly improving performance with multiple aggregates.</p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button class="btn btn-outline-secondary me-2">Cancel</button>
+                            <button class="btn btn-primary">Save Template</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template Section Content (hidden) -->
+    <div id="templateSections" style="display: none;">
+        <div id="condition-template">IF DATEPART(HOUR, @TransactionDateTime) IN (22, 23, 12) -- Check if hour is 10 PM, 11 PM, or 12 PM
+BEGIN
+    -- Your custom logic here
+    
+END</div>
+
+        <div id="variables-template">-- Define custom variables
+DECLARE @CustomValue DECIMAL(18,2) = @Amount * 1.05;
+DECLARE @TransactionHour INT = DATEPART(HOUR, @TransactionDateTime);</div>
+
+        <div id="outputs-template">-- Set output variables
+SET @AggregateSum = @Amount; -- Required: Value to aggregate (SUM)
+SET @AggregateCount = 1;     -- Required: Value to aggregate (COUNT)
+SET @AggregateMin = @Amount; -- Optional: Minimum value
+SET @AggregateMax = @Amount; -- Optional: Maximum value</div>
+
+        <div id="skipblock-template">-- Skip this aggregate if needed
+IF @Amount < 100 -- Skip small transactions
+BEGIN
+    SET @SkipAggregate = 1;
+END</div>
+    </div>
+    
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+    <!-- CodeMirror JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/sql/sql.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Default template
+            const defaultTemplate = `-- Customer Transaction Analysis Template
+-- Define when this aggregate should be generated
+
+-- Check conditions 
+IF DATEPART(HOUR, @TransactionDateTime) IN (22, 23, 12) -- Check if hour is 10 PM, 11 PM, or 12 PM
+BEGIN
+    -- Initialize skip flag
+    DECLARE @SkipAggregate BIT = 0;
+    
+    -- Define custom variables for calculations
+    DECLARE @CustomValue DECIMAL(18,2) = @Amount * 1.05;
+    DECLARE @TransactionHour INT = DATEPART(HOUR, @TransactionDateTime);
+    
+    -- Apply custom business logic
+    IF @Amount > 1000
+    BEGIN
+        -- Apply special logic for high-value transactions
+        SET @CustomValue = @CustomValue * 1.1;
+    END
+    
+    -- Skip small transactions if needed
+    IF @Amount < 10
+    BEGIN
+        SET @SkipAggregate = 1;
+    END
+    
+    -- Set output variables (required for aggregation)
+    SET @AggregateSum = @CustomValue;  -- Value to aggregate (SUM)
+    SET @AggregateCount = 1;           -- Value to aggregate (COUNT)
+    SET @AggregateMin = @Amount;       -- Value to track minimum (optional)
+    SET @AggregateMax = @Amount;       -- Value to track maximum (optional)
+END`;
+            
+            // Initialize CodeMirror
+            const sqlEditor = CodeMirror(document.getElementById('sqlTemplateEditor'), {
+                mode: 'text/x-sql',
+                lineNumbers: true,
+                theme: 'dracula',
+                lineWrapping: true,
+                indentUnit: 4,
+                tabSize: 4,
+                indentWithTabs: true,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                value: defaultTemplate
+            });
+            
+            // Parameter pills click handler
+            $('.parameter-pill').click(function() {
+                const paramText = $(this).data('param');
+                const doc = sqlEditor.getDoc();
+                const cursor = doc.getCursor();
+                doc.replaceRange(paramText, cursor);
+                sqlEditor.focus();
+            });
+            
+            // Template section click handler
+            $('.template-section').click(function() {
+                const sectionName = $(this).data('section');
+                const templateContent = $(`#${sectionName}-template`).html();
+                
+                const doc = sqlEditor.getDoc();
+                const cursor = doc.getCursor();
+                doc.replaceRange(templateContent, cursor);
+                sqlEditor.focus();
+            });
+            
+            // Reset template button
+            $('#resetTemplate').click(function() {
+                if (confirm('Reset template to default? This will discard all your changes.')) {
+                    sqlEditor.setValue(defaultTemplate);
+                }
+            });
+            
+            // Validate template button
+            $('#validateTemplate').click(function() {
+                $(this).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Validating...');
+                
+                // Simulate validation
+                setTimeout(() => {
+                    const template = sqlEditor.getValue();
+                    $(this).html('<i class="bi bi-check-circle"></i> Validate');
+                    
+                    if (!template.includes('@AggregateSum') || !template.includes('@AggregateCount')) {
+                        alert('Error: Template must set required output variables @AggregateSum and @AggregateCount');
+                    } else if (template.includes('CREATE') || template.includes('DROP') || template.includes('ALTER')) {
+                        alert('Error: DDL statements (CREATE, DROP, ALTER) are not allowed in templates');
+                    } else if (template.includes('DELETE') || template.includes('UPDATE')) {
+                        alert('Error: DML statements (DELETE, UPDATE) affecting existing data are not allowed in templates');
+                    } else {
+                        alert('Template validation successful! Your template contains all required elements and no disallowed statements.');
+                    }
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>
