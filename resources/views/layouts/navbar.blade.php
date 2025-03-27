@@ -41,12 +41,11 @@
             @endif
             @endguest
             @if(Auth::check())
-
             @can('isAdmin')
             <li class="nav-item mt-md-2 mr-md-2">
                 <a class="nav-link-item nav-header" href="{{ '/admin/home'}}">{{ __('Home') }}</a>
             </li>
-            @else
+            @elsecan('isUser')
             <li class="nav-item pr-5">
                 <a class="nav-link nav-header" href="bookings">Manage Bookings</a>
             </li>
